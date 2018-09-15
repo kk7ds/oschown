@@ -12,6 +12,11 @@
 import setuptools
 
 setuptools.setup(
-    setup_requires=['pbr>=1.8'],
-    pbr=True,
+    name='oschown',
+    author='The OSchown contributors',
+    license='Apache-2',
+    entry_points={
+        'console_scripts': ['oschown=oschown.main:main'],
+    },
+    packages=['oschown'],
 )
