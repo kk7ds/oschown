@@ -15,6 +15,7 @@ import nova.conf
 from nova import config
 from nova import context as nova_context
 from nova.db.sqlalchemy import api as nova_db
+from nova.db.sqlalchemy import models as nova_db_models
 from nova import objects
 
 from oschown import base
@@ -67,13 +68,24 @@ class NovaResource(base.ChownableResource):
         im.project_id = context.target_project_id
         im.save()
 
-    def _chown_instance_actions(self, ctx, context):
-        actions = objects.InstanceActionList.get_by_instance_uuid(
-            ctx, self._instance['uuid'])
-        for action in actions:
+    @staticmethod
+    @nova_db.pick_context_manager_writer
+    def _chown_actions_db(ctx, context, instance_uuid):
+        query = nova_db.model_query(ctx, nova_db_models.InstanceAction)
+        query = query.filter_by(instance_uuid=instance_uuid)
+        action_ids = []
+        for action in query.all():
+            action_ids.append(action.id)
             action.project_id = context.target_project_id
             action.user_id = context.target_user_id
-            print('FIXME: Update instance action %s' % action.id)
+            ctx.session.add(action)
+        return action_ids
+
+    def _chown_instance_actions(self, ctx, context):
+        action_ids = self._chown_actions_db(ctx, context,
+                                            self._instance['uuid'])
+        for action_id in action_ids:
+            LOG.info('Changing ownership of instance action %i' % action_id)
 
     def chown(self, context):
         self._chown_instance_record(self._admin_ctx, context)
