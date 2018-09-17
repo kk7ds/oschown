@@ -19,6 +19,21 @@ What is oschown?
   local hacky solutions to this problem which may be incomplete and
   inconsistent.
 
+How Safe is oschown?
+--------------------
+
+Despite appearances, ``oschown`` should be used with extreme care. The
+goal here is to use the actual code from supported projects (nova,
+cinder, etc) to manipulate the state of the database to transfer
+ownership of resources. In some cases this may be using actual
+interfaces for such an operation, making this fairly safe. In others,
+it may be more risky and depend on your actual configuration, and/or
+the resources in question. Over time, this code is expected to grow
+additional safety measures to help make it more reliable, but it's
+always a good idea to try this against a snapshot of related databases
+with some sort of sanity check afterwards.
+
+
 Supported Resources and Status
 ------------------------------
 
