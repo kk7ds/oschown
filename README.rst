@@ -37,7 +37,7 @@ with some sort of sanity check afterwards.
 Supported Resources and Status
 ------------------------------
 
-* Nova: instances, cell mappings, instance actions (TODO)
+* Nova: instances, cell mappings, instance actions
 
 * Cinder: volumes and snapshots
 
